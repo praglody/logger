@@ -1,26 +1,33 @@
 package logger
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestInit(t *testing.T) {
 	type args struct {
-		logfile string
+		logname string
 	}
 	tests := []struct {
 		name    string
 		args    args
 		wantErr bool
 	}{
-		{"init", args{
-			logfile: "./logs/main.log",
-		}, false},
+		{
+			name: "=====",
+			args: args{
+				logname: "data",
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Init(tt.args.logfile); (err != nil) != tt.wantErr {
+			if err := Init(tt.args.logname); (err != nil) != tt.wantErr {
 				t.Errorf("Init() error = %v, wantErr %v", err, tt.wantErr)
 			} else {
-				Info("sagasfasdfsd")
+				Infof("%s\n", time.Now().Format(time.DateTime))
 			}
 		})
 	}
