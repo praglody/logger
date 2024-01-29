@@ -1,0 +1,14 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "go.toolsEnvVars": {
+      "GOPROXY": "https://goproxy.cn,direct",
+      "GOPRIVATE": "gitee.com",
+      "GONOPROXY": "none;"
+    }
+  }
+}
