@@ -1,4 +1,4 @@
-module logger
+module github.com/praglody/logger
 
 go 1.21
 
