@@ -13,11 +13,42 @@ var logDir = "./logs"
 var l *zap.Logger
 
 func Init(logname string) error {
+
+	logWriter, err := getWriter(logname)
+	if err != nil {
+		return err
+	}
+
+	encoderConfig := zap.NewProductionEncoderConfig()
+	encoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
+	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
+	encoder := zapcore.NewConsoleEncoder(encoderConfig)
+
+	l = zap.New(zapcore.NewCore(encoder, logWriter, zapcore.DebugLevel), zap.AddCaller(), zap.AddCallerSkip(1))
+	return nil
+}
+
+func GetLogger(logname string) (newLogger *zap.Logger, err error) {
+	logWriter, err := getWriter(logname)
+	if err != nil {
+		return nil, err
+	}
+
+	encoderConfig := zap.NewProductionEncoderConfig()
+	encoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
+	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
+	encoder := zapcore.NewConsoleEncoder(encoderConfig)
+
+	newLogger = zap.New(zapcore.NewCore(encoder, logWriter, zapcore.DebugLevel), zap.AddCaller())
+	return
+}
+
+func getWriter(logname string) (zapcore.WriteSyncer, error) {
 	// 创建目录（如果不存在）
 	// dir := filepath.Dir(logDir)
 	// println(dir)
 	if err := os.MkdirAll(logDir, os.ModePerm); err != nil {
-		return err
+		return nil, err
 	}
 
 	logfile := logname + ".log"
@@ -35,37 +66,7 @@ func Init(logname string) error {
 		Compress:   false,   // 是否压缩/归档旧文件
 	}
 
-	logWriter := zapcore.AddSync(lumberJackLogger)
-
-	encoderConfig := zap.NewProductionEncoderConfig()
-	encoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
-	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
-	encoder := zapcore.NewConsoleEncoder(encoderConfig)
-
-	l = zap.New(zapcore.NewCore(encoder, logWriter, zapcore.DebugLevel), zap.AddCaller(), zap.AddCallerSkip(1))
-	return nil
-}
-
-func GetLogger(logfile string) (newLogger *zap.Logger, err error) {
-	// 创建目录（如果不存在）
-	dir := filepath.Dir(logfile)
-	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return nil, err
-	}
-
-	oFile, err := os.OpenFile(logfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return nil, err
-	}
-	rsiWriter := zapcore.AddSync(oFile)
-
-	encoderConfig := zap.NewProductionEncoderConfig()
-	encoderConfig.EncodeTime = zapcore.RFC3339TimeEncoder
-	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
-	encoder := zapcore.NewConsoleEncoder(encoderConfig)
-
-	newLogger = zap.New(zapcore.NewCore(encoder, rsiWriter, zapcore.DebugLevel), zap.AddCaller())
-	return
+	return zapcore.AddSync(lumberJackLogger), nil
 }
 
 func Debug(args ...interface{}) {
