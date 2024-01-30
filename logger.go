@@ -69,6 +69,10 @@ func getWriter(logname string) (zapcore.WriteSyncer, error) {
 	return zapcore.AddSync(lumberJackLogger), nil
 }
 
+func SetLogDir(dir string) {
+	logDir = dir
+}
+
 func Debug(args ...interface{}) {
 	l.Sugar().Debug(args...)
 }
