@@ -9,6 +9,8 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+type LogSyncFunc func()
+
 var logDir = "./logs"
 var l *zap.Logger
 
