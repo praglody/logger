@@ -30,7 +30,7 @@ func Init(logname string) error {
 	return nil
 }
 
-func GetLogger(logname string) (newLogger *zap.Logger, callerSkip int, err error) {
+func GetLogger(logname string, callerSkip int) (newLogger *zap.Logger, err error) {
 	logWriter, err := getWriter(logname)
 	if err != nil {
 		return nil, err
