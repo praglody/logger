@@ -30,7 +30,7 @@ func Init(logname string) error {
 	return nil
 }
 
-func GetLogger(logname string) (newLogger *zap.Logger, err error) {
+func GetLogger(logname string) (newLogger *zap.Logger, callerSkip int, err error) {
 	logWriter, err := getWriter(logname)
 	if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func GetLogger(logname string) (newLogger *zap.Logger, err error) {
 	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	encoder := zapcore.NewConsoleEncoder(encoderConfig)
 
-	newLogger = zap.New(zapcore.NewCore(encoder, logWriter, zapcore.DebugLevel), zap.AddCaller())
+	newLogger = zap.New(zapcore.NewCore(encoder, logWriter, zapcore.DebugLevel), zap.AddCaller(), zap.AddCallerSkip(callerSkip))
 	return
 }
 
@@ -103,7 +103,7 @@ func Error(args ...interface{}) {
 	l.Sugar().Error(args...)
 }
 
-func Errof(template string, args ...interface{}) {
+func Errorf(template string, args ...interface{}) {
 	l.Sugar().Errorf(template, args...)
 }
 
